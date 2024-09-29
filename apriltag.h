@@ -186,8 +186,10 @@ struct apriltag_detector
     // Used to manage multi-threading.
     workerpool_t *wp;
 
+#ifndef NOTHREADS
     // Used for thread safety.
     pthread_mutex_t mutex;
+#endif
 };
 
 // Represents the detection of a tag. These are returned to the user

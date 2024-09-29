@@ -23,6 +23,7 @@ SOFTWARE.
 #include "common/pthreads_cross.h"
 
 #ifdef _WIN32
+#ifndef NOTHREADS
 
 typedef struct {
     SRWLOCK lock;
@@ -222,6 +223,8 @@ int sched_yield() {
     return (int)SwitchToThread();
 }
 
+#endif /* NOTHREADS */
+
 void ms_to_timespec(struct timespec *ts, unsigned int ms)
 {
     if (ts == NULL)
@@ -246,11 +249,21 @@ unsigned int pcthread_get_num_procs()
     return sysinfo.dwNumberOfProcessors;
 }
 
-#else
+#else /* _WIN32 */
 
+#ifndef NOTHREADS
 #include <unistd.h>
-unsigned int pcthread_get_num_procs()
+unsigned int pcthread_get_num_procs(void)
 {
     return (unsigned int)sysconf(_SC_NPROCESSORS_ONLN);
+}
+#endif
+
+#endif /* _WIN32 */
+
+#ifdef NOTHREADS
+unsigned int pcthread_get_num_procs(void)
+{
+    return 1;
 }
 #endif

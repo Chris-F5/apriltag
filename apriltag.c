@@ -369,7 +369,9 @@ apriltag_detector_t *apriltag_detector_create()
 
     td->tag_families = zarray_create(sizeof(apriltag_family_t*));
 
+#ifndef NOTHREADS
     pthread_mutex_init(&td->mutex, NULL);
+#endif
 
     td->tp = timeprofile_create();
 
@@ -967,9 +969,13 @@ static void quad_decode_task(void *_u)
                     det->p[i][1] = p[1];
                 }
 
+#ifndef NOTHREADS
                 pthread_mutex_lock(&td->mutex);
+#endif
                 zarray_add(task->detections, &det);
+#ifndef NOTHREADS
                 pthread_mutex_unlock(&td->mutex);
+#endif
             }
 
             quad_destroy(quad);

@@ -7,6 +7,7 @@ endif()
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(BUILD_EXAMPLES "Build example executables" ON)
 option(ASAN "Use AddressSanitizer for debug builds to detect memory issues" OFF)
+option(NOTHREADS "Dissable multithreading" OFF)
 
 if (ASAN)
     set(ASAN_FLAGS "\
@@ -27,6 +28,10 @@ if (ASAN)
     ")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ASAN_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ASAN_FLAGS}")
+endif()
+
+if (NOTHREADS)
+    add_definitions(-D NOTHREADS)
 endif()
 
 # Set a default build type if none was specified

@@ -42,10 +42,24 @@ either expressed or implied, of the Regents of The University of Michigan.
 #include "workerpool.h"
 #include "debug_print.h"
 
+struct task
+{
+    void (*f)(void *p);
+    void *p;
+};
+
+int workerpool_get_nprocs(void)
+{
+    return pcthread_get_num_procs();
+}
+
 struct workerpool {
-    int nthreads;
     zarray_t *tasks;
     int taskspos;
+    int end_count; // how many threads are done?
+
+#ifndef NOTHREADS
+    int nthreads;
 
     pthread_t *threads;
     int *status;
@@ -54,17 +68,23 @@ struct workerpool {
     pthread_cond_t startcond;   // used to signal the availability of work
     bool start_predicate;       // predicate that prevents spurious wakeups on startcond
     pthread_cond_t endcond;     // used to signal completion of all work
-
-    int end_count; // how many threads are done?
+#endif
 };
 
-struct task
+void workerpool_run_single(workerpool_t *wp)
 {
-    void (*f)(void *p);
-    void *p;
-};
+    for (int i = 0; i < zarray_size(wp->tasks); i++) {
+        struct task *task;
+        zarray_get_volatile(wp->tasks, i, &task);
+        task->f(task->p);
+    }
 
-void *worker_thread(void *p)
+    zarray_clear(wp->tasks);
+}
+
+#ifndef NOTHREADS
+
+static void *worker_thread(void *p)
 {
     workerpool_t *wp = (workerpool_t*) p;
 
@@ -177,17 +197,6 @@ void workerpool_add_task(workerpool_t *wp, void (*f)(void *p), void *p)
     }
 }
 
-void workerpool_run_single(workerpool_t *wp)
-{
-    for (int i = 0; i < zarray_size(wp->tasks); i++) {
-        struct task *task;
-        zarray_get_volatile(wp->tasks, i, &task);
-        task->f(task->p);
-    }
-
-    zarray_clear(wp->tasks);
-}
-
 // runs all added tasks, waits for them to complete.
 void workerpool_run(workerpool_t *wp)
 {
@@ -213,13 +222,39 @@ void workerpool_run(workerpool_t *wp)
     }
 }
 
-int workerpool_get_nprocs()
+#else /* NOTHREADS */
+
+workerpool_t *workerpool_create(__attribute__((unused)) int nthreads)
 {
-#ifdef _WIN32
-    SYSTEM_INFO sysinfo;
-    GetSystemInfo(&sysinfo);
-    return sysinfo.dwNumberOfProcessors;
-#else
-    return sysconf (_SC_NPROCESSORS_ONLN);
-#endif
+    workerpool_t *wp = calloc(1, sizeof(workerpool_t));
+    wp->tasks = zarray_create(sizeof(struct task));
+    return wp;
 }
+
+void workerpool_destroy(workerpool_t *wp)
+{
+    if (wp == NULL)
+        return;
+    zarray_destroy(wp->tasks);
+    free(wp);
+}
+
+int workerpool_get_nthreads(__attribute__((unused)) workerpool_t *wp)
+{
+    return 1;
+}
+
+void workerpool_add_task(workerpool_t *wp, void (*f)(void *p), void *p)
+{
+    struct task t;
+    t.f = f;
+    t.p = p;
+    zarray_add(wp->tasks, &t);
+}
+
+void workerpool_run(workerpool_t *wp)
+{
+    workerpool_run_single(wp);
+}
+
+#endif

@@ -23,6 +23,7 @@ SOFTWARE.
 #ifndef __CPTHREAD_H__
 #define __CPTHREAD_H__
 
+#ifndef NOTHREADS
 #ifdef _WIN32
 #include <stdbool.h>
 #include <windows.h>
@@ -30,8 +31,11 @@ SOFTWARE.
 #include <pthread.h>
 #include <sched.h>
 #endif
+#endif /* NOTHREADS */
+
 #include <time.h>
 
+#ifndef NOTHREADS
 #ifdef _WIN32
 
 typedef CRITICAL_SECTION pthread_mutex_t;
@@ -65,13 +69,13 @@ int sched_yield(void);
 #ifdef __cplusplus
 }
 #endif
-#endif
-
+#endif /* _WIN32 */
+#endif /* NOTHREADS */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-unsigned int pcthread_get_num_procs();
+unsigned int pcthread_get_num_procs(void);
 
 void ms_to_timespec(struct timespec *ts, unsigned int ms);
 unsigned int timespec_to_ms(const struct timespec *abstime);
