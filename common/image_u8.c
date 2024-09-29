@@ -30,6 +30,7 @@ either expressed or implied, of the Regents of The University of Michigan.
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <inttypes.h>
 
 #include "common/image_u8.h"
 #include "common/pnm.h"
@@ -208,7 +209,7 @@ int image_u8_write_pnm(const image_u8_t *im, const char *path)
     }
 
     // Only outputs to grayscale
-    fprintf(f, "P5\n%d %d\n255\n", im->width, im->height);
+    fprintf(f, "P5\n%" PRId32 " %" PRId32 "\n255\n", im->width, im->height);
 
     for (int y = 0; y < im->height; y++) {
         if (im->width != (int32_t)fwrite(&im->buf[y*im->stride], 1, im->width, f)) {

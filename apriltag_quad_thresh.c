@@ -1958,7 +1958,7 @@ zarray_t *apriltag_quad_thresh(apriltag_detector_t *td, image_u8_t *im)
         // assume letter, which is 612x792 points.
         double scale = fmin(612.0/im->width, 792.0/im2->height);
         fprintf(f, "%.15f %.15f scale\n", scale, scale);
-        fprintf(f, "0 %d translate\n", im2->height);
+        fprintf(f, "0 %" PRId32 " translate\n", im2->height);
         fprintf(f, "1 -1 scale\n");
 
         postscript_image(f, im2);
