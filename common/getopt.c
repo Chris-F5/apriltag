@@ -257,7 +257,7 @@ int getopt_parse(getopt_t *gopt, int argc, char *argv[], int showErrors)
 
                 if (goo==NULL) {
                     // is the argument a numerical literal that happens to be negative?
-                    if (pos==1 && isdigit(tok[pos])) {
+                    if (pos==1 && isdigit((int)tok[pos])) {
                         zarray_add(gopt->extraargs, &tok);
                         tok = NULL;
                         break;

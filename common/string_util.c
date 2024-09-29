@@ -234,7 +234,7 @@ char *str_lstrip(char *str)
 
     char *ptr = str;
     char *end = str + strlen(str);
-    for(; ptr != end && isspace(*ptr); ptr++);
+    for(; ptr != end && isspace((int)*ptr); ptr++);
     // shift the string to the left so the original pointer still works
     memmove(str, ptr, strlen(ptr)+1);
     return str;
@@ -245,7 +245,7 @@ char *str_rstrip(char *str)
     assert(str != NULL);
 
     char *ptr = str + strlen(str) - 1;
-    for(; ptr+1 != str && isspace(*ptr); ptr--);
+    for(; ptr+1 != str && isspace((int)*ptr); ptr--);
     *(ptr+1) = '\0';
     return str;
 }
