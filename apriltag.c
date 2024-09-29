@@ -1281,7 +1281,7 @@ zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig)
         fprintf(f, "%%!PS\n\n");
         double scale = fmin(612.0/darker->width, 792.0/darker->height);
         fprintf(f, "%f %f scale\n", scale, scale);
-        fprintf(f, "0 %d translate\n", darker->height);
+        fprintf(f, "0 %" PRId32 " translate\n", darker->height);
         fprintf(f, "1 -1 scale\n");
         postscript_image(f, darker);
 
@@ -1362,7 +1362,7 @@ zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig)
         // assume letter, which is 612x792 points.
         double scale = fmin(612.0/darker->width, 792.0/darker->height);
         fprintf(f, "%f %f scale\n", scale, scale);
-        fprintf(f, "0 %d translate\n", darker->height);
+        fprintf(f, "0 %" PRId32 " translate\n", darker->height);
         fprintf(f, "1 -1 scale\n");
 
         postscript_image(f, darker);

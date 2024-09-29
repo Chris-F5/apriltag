@@ -27,15 +27,17 @@ either expressed or implied, of the Regents of The University of Michigan.
 
 #pragma once
 
+#include <inttypes.h>
+
 // write commands in postscript language to render an image in the current
 // graphics environment. The image will be rendered in one pixel per unit
 // with Y up coordinate axis (e.g. upside down).
 static void postscript_image(FILE *f, image_u8_t *im)
 {
 //    fprintf(f, "/readstring {\n  currentfile exch readhexstring pop\n} bind def\n");
-    fprintf(f, "/picstr %d string def\n", im->width);
+    fprintf(f, "/picstr %" PRId32 " string def\n", im->width);
 
-    fprintf(f, "%d %d 8 [1 0 0 1 0 0]\n",
+    fprintf(f, "%" PRId32 " %" PRId32 " 8 [1 0 0 1 0 0]\n",
             im->width, im->height);
 
     fprintf(f, "{currentfile picstr readhexstring pop}\nimage\n");
