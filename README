@@ -1,0 +1,54 @@
+MICROPYTHON APRILTAG
+--------------------
+
+This is my micropython fork of AprilRobotics/apriltag [1]. I make this so
+I could detect apriltags on the rp2040 running micropython.
+
+To make a C module accessable from micropython you can either create a dynamic
+module or compile your own copy of the firmware with an additional usermodule.
+A dynamic module is just some native machine code in .mpy file which can be
+copied into the flash storage of a device at runtime. This project takes the
+latter approach. By compiling our module alongside the firmware we get two
+advantages:
+
+    1. We can access micropython internals. Especially heap allocation
+       functions (like m_malloc) which we use a lot.
+    2. We can use the .data' section. The micropython linker for dynamic modules
+       does not currently support this. Some of the apriltag source and libm
+       object files it depends on use .data section.
+
+BUILDING MICROPYTHON FIRMWARE
+-----------------------------
+
+To use this port, you must compile micropython firmware with this cmodule. See
+[2] and [3] for more detailed instructions of how to do this. But the TLDR
+is as follows:
+
+    git clone https://github.com/micropython/micropython.git
+
+    # I have only tested with the rp2 port.
+    cd micropython/ports/rp2
+
+    # Choose your rp2 board type here and set the USER_C_MODULE path to point
+    # to the micropython.cmake in this repo.
+    make BOARD=RPI_PICO_W USER_C_MODULES=~/apriltag/micropython.cmake
+    # This creates a build-*/firmware.uf2 for you to copy to your device.
+
+EXAMPLE USAGE
+-------------
+
+After you have compiled micropython with this user module and uploaded the
+firmware, you can detect a test image with the following example code:
+
+    import apriltag
+    img = bytearray(160*120)
+    apriltag.test_image(img)
+    apriltag.detect(img)
+
+
+LINKS
+-----
+
+[1] https://github.com/AprilRobotics/apriltag
+[2] https://docs.micropython.org/en/latest/develop/gettingstarted.html
+[3] https://docs.micropython.org/en/latest/develop/cmodules.html
