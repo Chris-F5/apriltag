@@ -42,6 +42,8 @@ either expressed or implied, of the Regents of The University of Michigan.
 #include "workerpool.h"
 #include "debug_print.h"
 
+#include "macros.h"
+
 struct workerpool {
     int nthreads;
     zarray_t *tasks;

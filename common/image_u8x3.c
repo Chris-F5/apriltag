@@ -37,6 +37,8 @@ either expressed or implied, of the Regents of The University of Michigan.
 
 #include "image_u8x3.h"
 
+#include "macros.h"
+
 // least common multiple of 64 (sandy bridge cache line) and 48 (stride needed
 // for 16byte-wide RGB processing). (It's possible that 48 would be enough).
 #define DEFAULT_ALIGNMENT_U8X3 192

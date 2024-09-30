@@ -28,6 +28,8 @@ either expressed or implied, of the Regents of The University of Michigan.
 #include <stdlib.h>
 #include "tag25h9.h"
 
+#include "macros.h"
+
 static uint64_t codedata[35] = {
    0x000000000156f1f4UL,
    0x0000000001f28cd5UL,

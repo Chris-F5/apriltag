@@ -37,6 +37,8 @@ either expressed or implied, of the Regents of The University of Michigan.
 #include "getopt.h"
 #include "common/math_util.h"
 
+#include "macros.h"
+
 #define GOO_BOOL_TYPE 1
 #define GOO_STRING_TYPE 2
 

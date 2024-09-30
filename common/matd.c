@@ -38,6 +38,8 @@ either expressed or implied, of the Regents of The University of Michigan.
 #include "common/matd.h"
 #include "common/debug_print.h"
 
+#include "macros.h"
+
 // a matd_t with rows=0 cols=0 is a SCALAR.
 
 // to ease creating mati, matf, etc. in the future.

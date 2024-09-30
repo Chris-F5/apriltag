@@ -38,6 +38,8 @@ extern "C" {
 #include "time_util.h"
 #include "zarray.h"
 
+#include "macros.h"
+
 struct timeprofile_entry
 {
     char name[32];

@@ -32,6 +32,8 @@ either expressed or implied, of the Regents of The University of Michigan.
 #include <stdlib.h>
 #include <string.h>
 
+#include "macros.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

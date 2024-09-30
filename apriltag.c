@@ -54,6 +54,8 @@ either expressed or implied, of the Regents of The University of Michigan.
 
 #include "common/postscript_utils.h"
 
+#include "macros.h"
+
 #ifdef _WIN32
 static inline void srandom(unsigned int seed)
 {
