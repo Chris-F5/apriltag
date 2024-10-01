@@ -1908,6 +1908,8 @@ zarray_t *apriltag_quad_thresh(apriltag_detector_t *td, image_u8_t *im)
 
     zarray_t* clusters = gradient_clusters(td, threshim, w, h, ts, uf);
 
+    unionfind_destroy(uf);
+
     if (td->debug) {
         image_u8x3_t *d = image_u8x3_create(w, h);
 
@@ -1990,8 +1992,6 @@ zarray_t *apriltag_quad_thresh(apriltag_detector_t *td, image_u8_t *im)
     }
 
     timeprofile_stamp(td->tp, "fit quads to clusters");
-
-    unionfind_destroy(uf);
 
     for (int i = 0; i < zarray_size(clusters); i++) {
         zarray_t *cluster;
