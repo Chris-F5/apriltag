@@ -28,7 +28,9 @@ either expressed or implied, of the Regents of The University of Michigan.
 
 #define _GNU_SOURCE  // Possible fix for 16.04
 #define __USE_GNU
+#ifndef NOTHREADS
 #include "common/pthreads_cross.h"
+#endif
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -50,13 +52,16 @@ struct task
 
 int workerpool_get_nprocs(void)
 {
+#ifndef NOTHREADS
     return pcthread_get_num_procs();
+#else
+    return 1;
+#endif
 }
 
 struct workerpool {
     zarray_t *tasks;
     int taskspos;
-    int end_count; // how many threads are done?
 
 #ifndef NOTHREADS
     int nthreads;
@@ -68,6 +73,8 @@ struct workerpool {
     pthread_cond_t startcond;   // used to signal the availability of work
     bool start_predicate;       // predicate that prevents spurious wakeups on startcond
     pthread_cond_t endcond;     // used to signal completion of all work
+
+    int end_count; // how many threads are done?
 #endif
 };
 
