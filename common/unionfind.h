@@ -37,23 +37,23 @@ typedef struct unionfind unionfind_t;
 
 struct unionfind
 {
-    uint32_t maxid;
+    uint16_t maxid;
 
-    // Parent node for each. Initialized to 0xffffffff
-    uint32_t *parent;
+    // Parent node for each. Initialized to 0xffff
+    uint16_t *parent;
 
     // The size of the tree excluding the root
-    uint32_t *size;
+    uint16_t *size;
 };
 
-static inline unionfind_t *unionfind_create(uint32_t maxid)
+static inline unionfind_t *unionfind_create(uint16_t maxid)
 {
     unionfind_t *uf = (unionfind_t*) calloc(1, sizeof(unionfind_t));
     uf->maxid = maxid;
-    uf->parent = (uint32_t *) malloc((maxid+1) * sizeof(uint32_t) * 2);
-    memset(uf->parent, 0xff, (maxid+1) * sizeof(uint32_t));
+    uf->parent = (uint16_t *) malloc((maxid+1) * sizeof(uint16_t) * 2);
+    memset(uf->parent, 0xff, (maxid+1) * sizeof(uint16_t));
     uf->size = uf->parent + (maxid+1);
-    memset(uf->size, 0, (maxid+1) * sizeof(uint32_t));
+    memset(uf->size, 0, (maxid+1) * sizeof(uint16_t));
     return uf;
 }
 
@@ -64,14 +64,14 @@ static inline void unionfind_destroy(unionfind_t *uf)
 }
 
 /*
-static inline uint32_t unionfind_get_representative(unionfind_t *uf, uint32_t id)
+static inline uint16_t unionfind_get_representative(unionfind_t *uf, uint16_t id)
 {
     // base case: a node is its own parent
     if (uf->parent[id] == id)
         return id;
 
     // otherwise, recurse
-    uint32_t root = unionfind_get_representative(uf, uf->parent[id]);
+    uint16_t root = unionfind_get_representative(uf, uf->parent[id]);
 
     // short circuit the path. [XXX This write prevents tail recursion]
     uf->parent[id] = root;
@@ -82,11 +82,11 @@ static inline uint32_t unionfind_get_representative(unionfind_t *uf, uint32_t id
 
 // this one seems to be every-so-slightly faster than the recursive
 // version above.
-static inline uint32_t unionfind_get_representative(unionfind_t *uf, uint32_t id)
+static inline uint16_t unionfind_get_representative(unionfind_t *uf, uint16_t id)
 {
-    uint32_t root = uf->parent[id];
+    uint16_t root = uf->parent[id];
     // unititialized node, so set to self
-    if (root == 0xffffffff) {
+    if (root == 0xffff) {
         uf->parent[id] = id;
         return id;
     }
@@ -98,7 +98,7 @@ static inline uint32_t unionfind_get_representative(unionfind_t *uf, uint32_t id
 
     // go back and collapse the tree.
     while (uf->parent[id] != root) {
-        uint32_t tmp = uf->parent[id];
+        uint16_t tmp = uf->parent[id];
         uf->parent[id] = root;
         id = tmp;
     }
@@ -106,16 +106,16 @@ static inline uint32_t unionfind_get_representative(unionfind_t *uf, uint32_t id
     return root;
 }
 
-static inline uint32_t unionfind_get_set_size(unionfind_t *uf, uint32_t id)
+static inline uint16_t unionfind_get_set_size(unionfind_t *uf, uint16_t id)
 {
-    uint32_t repid = unionfind_get_representative(uf, id);
+    uint16_t repid = unionfind_get_representative(uf, id);
     return uf->size[repid] + 1;
 }
 
-static inline uint32_t unionfind_connect(unionfind_t *uf, uint32_t aid, uint32_t bid)
+static inline uint16_t unionfind_connect(unionfind_t *uf, uint16_t aid, uint16_t bid)
 {
-    uint32_t aroot = unionfind_get_representative(uf, aid);
-    uint32_t broot = unionfind_get_representative(uf, bid);
+    uint16_t aroot = unionfind_get_representative(uf, aid);
+    uint16_t broot = unionfind_get_representative(uf, bid);
 
     if (aroot == broot)
         return aroot;
@@ -127,8 +127,8 @@ static inline uint32_t unionfind_connect(unionfind_t *uf, uint32_t aid, uint32_t
     // for rank.  In my testing, it's often *faster* to use size than
     // rank, perhaps because the rank of the tree isn't that critical
     // if there are very few nodes in it.
-    uint32_t asize = uf->size[aroot] + 1;
-    uint32_t bsize = uf->size[broot] + 1;
+    uint16_t asize = uf->size[aroot] + 1;
+    uint16_t bsize = uf->size[broot] + 1;
 
     // optimization idea: We could shortcut some or all of the tree
     // that is grafted onto the other tree. Pro: those nodes were just
