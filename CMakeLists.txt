@@ -74,7 +74,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if (MSVC)
     add_compile_definitions("_CRT_SECURE_NO_WARNINGS")
-else()
+elseif(NOT NOTHREADS)
     find_package(Threads REQUIRED)
     target_link_libraries(${PROJECT_NAME} PUBLIC Threads::Threads)
 endif()
